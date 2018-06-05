@@ -1,1 +1,11 @@
 == Licensing Front : Citizen Portal
+
+A Node.js Web application for the citizen. Full documentation will be uploaded soon
+
+=== Credits
+
+Yasser Kantour
+
+* Github: https://github.com/yasskant
+* Facebook: https://www.facebook.com/E.Yasser
+* Email: ykantour20@gmail.com
