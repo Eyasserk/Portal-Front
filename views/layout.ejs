@@ -6,12 +6,13 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <meta name="description" content="Silcam: Portal del ciudadano">
-   <meta name="author" content="Yasser Kantour">
-   <meta name="keywords" content="licencias mineras, concesión, portal del ciudadano, Miniterio de geología y minas">
+    <meta name="author" content="Yasser Kantour">
+    <meta name="keywords" content="licencias mineras, concesión, portal del ciudadano, Miniterio de geología y minas">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
     <link rel="stylesheet" type="text/css" href="/stylesheets/notifications.css">
@@ -45,18 +46,19 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Link</a></li>
+            <li class="divider-vertical"></li>
+            <li><a href="/request">Solicitud</a></li>
+            <li class="divider-vertical"></li>
+            <li><a href="/licenses">Concesiones</a></li>
+            <li class="divider-vertical"></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Expedientes <span class="caret"></span></a>
               <ul class="dropdown-menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
+                <li><a href="/cases?caseType=1"><i class="fas fa-caret-right"></i> Prospección</a></li>
+                <li><a href="/cases?caseType=2"><i class="fas fa-caret-right"></i> Explotación</a></li>
+                <li><a href="/cases?caseType=3"><i class="fas fa-caret-right"></i> Exploración</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="#">Separated link</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#">One more separated link</a></li>
+                <li><a href="/cases?caseType=0"><i class="fas fa-caret-right"></i> Otros</a></li>
               </ul>
             </li>
           </ul>
@@ -75,11 +77,12 @@
           <% if(session.user){ %>
           <ul class="nav navbar-nav navbar-right">
             <!-- Mensajes -->
-            <li><a href="/misMensajes"><span class="glyphicon glyphicon-envelope" <% if(session.messages.unread > 0){ %> style="color:#ff0000;" <% } %> ></span> Mensajes (<b><%= session.messages.length %></b>)</a></li>
+            <li><a id="msg-menu" href="/my/messages" <% if(session.messages.unread > 0){ %> style="color:#ff0000;" <% } %>><span class="glyphicon glyphicon-envelope"></span> Mensajes (<b><%= session.messages.unread %></b>)</a></li>
             <!-- Mensajes -->
             <!-- Notificaciones -->
+            <li class="divider-vertical"></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" <% if(session.notifications.unread > 0){ %> style="color:#ff0000;" <% } %> >
+              <a id="notif-menu" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" <% if(session.notifications.unread > 0){ %> style="color:#ff0000;" <% } %> >
                 <i class="glyphicon glyphicon-globe"></i>
                 Notificaciones (<b id="num-notif-unread"><%= session.notifications.unread %></b>)
               </a>
@@ -101,6 +104,7 @@
               </ul>
             </li>
             <!-- Fin Notificaciones -->
+            <li class="divider-vertical"></li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                 <i class="glyphicon glyphicon-user"></i>
@@ -110,8 +114,8 @@
               <ul class="dropdown-menu">
                 <form id="logout-form" class="logout-form" action="/logout" accept-charset="UTF-8" method="post">
                 </form>
-                <li><a href="/misDatos"><i class="glyphicon glyphicon-align-justify"></i> Mis datos personales</a></li>
-                <li><a href="/misExpedientes"><i class="glyphicon glyphicon-folder-open"></i> Mis Expedientes</a></li>
+                <li><a href="/my/pernal"><i class="glyphicon glyphicon-align-justify"></i> Mis datos personales</a></li>
+                <li><a href="/my/cases"><i class="glyphicon glyphicon-folder-open"></i> Mis Expedientes</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/help"><i class="glyphicon glyphicon-info-sign"></i> Ayuda</a></li>
                 <li role="separator" class="divider"></li>

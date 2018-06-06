@@ -3,6 +3,10 @@ function readNotification(id){
 	//Update unread number
 	var unread = Number($("#num-notif-unread").html());
 	if(unread && unread > 0){
-		$("#num-notif-unread").html(unread-1);
+		unread = unread - 1;
+		$("#num-notif-unread").html(unread);
+		if(unread === 0){
+			$("#notif-menu").css('color','');
+		}
 	}
 }

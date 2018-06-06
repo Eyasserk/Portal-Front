@@ -41,13 +41,13 @@ exports.create = function(req, res, next) {
             //Cargar mensajes y notificaciones
             notification_controller.getNotifications(user.id,user.type,authData.token,function(error,notificaciones){
               if(error){
-                req.flash('warning','No se ha podido cargar sus notificaciones.');
+                req.flash('info','No se ha podido cargar sus notificaciones.');
+                req.session.messages = {unread:3,messages:[]};
                 req.session.notifications = {unread:0,notifications:[]};
               }else{
-                req.session.messages = {};
+                req.session.messages = {unread:3,messages:[]};
                 req.session.notifications = notificaciones;
               }
-              req.flash('success','Olée');
               res.redirect(redir);
             });
           }
@@ -55,11 +55,6 @@ exports.create = function(req, res, next) {
       }
     });
 };
-
-// Logout
-// 
-// Para salir de la session simplemente destruyo req.session.user
-//
 
 exports.destroy = function(req, res, next) {
   if(req.session && req.session.user){

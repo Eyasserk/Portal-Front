@@ -6,8 +6,6 @@ exports.list = function(req,res,next){
 	var mineralId = req.query.mineral;
 	var provinciaId = req.query.province;
 	var tipoExpedienteId = req.query.caseType;
-	var tipoPersonaId = req.query.personType;
-	var personId = req.query.person;
 	var fechaInicio = req.query.startDate;
 	var fechaFin = req.query.endDate;
 
@@ -24,12 +22,6 @@ exports.list = function(req,res,next){
 	if(tipoExpedienteId && ! '' === tipoExpedienteId){
 		query.push('tipoExpedienteId='+tipoExpedienteId);
 	}
-	if(tipoPersonaId && ! '' === tipoPersonaId){
-		query.push('tipoPersonaId='+tipoPersonaId);
-	}
-	if(personId && ! '' === personId){
-		query.push('personId='+personId);
-	}
 	if(fechaInicio && ! '' === fechaInicio){
 		query.push('fechaInicio='+fechaInicio);
 	}
@@ -39,12 +31,12 @@ exports.list = function(req,res,next){
 
 	var q = formatQuery(query);
 
-	getExpedientes(q,function(error,expedientes){
+	getLicencias(q,function(error,licencias){
 		if(error){
 			req.flash('error', 'Ha habido un error con la búsqueda.');
 			res.redirect('/');
 		}else{
-			res.render('case/list', {expedientes: expedientes});
+			res.render('license/list', {licencias: licencias});
 		}
 	});
 };
@@ -64,9 +56,9 @@ var formatQuery = function(query){
 	return q;
 };
 
-var getExpedientes = function(query,callback){
+var getLicencias = function(query,callback){
 	request({
-		url: config.silcam_back_url+'/expedientes?q='+query,
+		url: config.silcam_back_url+'/licencias?q='+query,
 		method: 'GET',
 		headers: {
 			'Accept' : 'application/json'

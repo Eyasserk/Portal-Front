@@ -41,6 +41,7 @@
 }
 .navbar-default .dropdown-menu.notify-drop .drop-content > li:hover {
   background-color: #fcfcfc;
+  cursor: pointer;
 }
 .navbar-default .dropdown-menu.notify-drop .drop-content > li:last-child {
   border-bottom: none;
@@ -115,4 +116,21 @@
 }
 .notify-drop {
     min-width: 350px !important;
+}
+.navbar .divider-vertical {
+    height: 50px;
+    margin: 0 9px;
+    border-right: 1px solid #ffffff;
+    border-left: 1px solid #e4e4e4;
+}
+
+.navbar-inverse .divider-vertical {
+    border-right-color: #222222;
+    border-left-color: #111111;
+}
+
+@media (max-width: 767px) {
+    .navbar-collapse .nav > .divider-vertical {
+        display: none;
+     }
 }
