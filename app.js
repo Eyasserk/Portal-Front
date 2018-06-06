@@ -4,7 +4,9 @@ var path = require('path');
 var partials = require ('express-partials');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var flash = require('express-flash');
 var logger = require('morgan');
+var helmet = require('helmet');
 
 var router = require('./routes/index');
 
@@ -18,17 +20,11 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session({secret:'silcam'}));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({
-  name: 'sessionID',
-  secret: 'melon',
-  cookie: { secure: false,
-            httpOnly: false,
-            path: '/',
-            expires: new Date( Date.now() + 60 * 60 * 1000 )
-          }
-  })
-);
+app.use(helmet());
+app.use(partials());
+app.use(flash());
 
 
 // Helpers dinamicos:
@@ -38,29 +34,23 @@ app.use(function(req, res, next) {
   if (!req.session.redir) {
     req.session.redir = '/';
   }
+  
   // Hacer visible req.session en las vistas
   res.locals.session = req.session;
   next();
 });
 
-app.use(partials());
-
 app.use('/', router);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  res.render('notFound');
 });
 
 // error handler
+/**
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
   res.render('error');
 });
-
+*/
 module.exports = app;

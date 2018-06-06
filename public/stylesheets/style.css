@@ -1,5 +1,5 @@
 body {
-  padding: 50px;
+  padding: 10px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -11,19 +11,28 @@ a {
 	:: Navbar color
 	-------------------------------------------------- */
 .navbar-custom{
-	background-color: #1fa67b !important;
+	background-color: #009999 !important;
 	color: #fff !important;
 }
 .navbar-custom a{
+    background-color: #009999 !important;
 	color: #fff !important;
 }
 .navbar-custom ul{
-	color: #fff !important;
-	background-color: #1fa67b !important;
+    background-color: #009999 !important;
+	color: #fff !important;	
 }
-.navbar-custom a:hover{
-	background-color: : #fff !important;
-	color: #1fa67b !important;
+.navbar-custom ul:hover{
+    filter: brightness(92%);
+}
+.navbar-custom li:hover{
+    filter: brightness(92%);
+}
+.navbar-custom a:active{
+    filter: brightness(92%);
+}
+.navbar-custom a:visited{
+    filter: brightness(92%);
 }
 
 
@@ -38,7 +47,7 @@ a {
     margin: 0 auto;
 }
 #login h1 {
-    color: #1fa67b;
+    color: #009999;
     font-size: 18px;
     text-align: center;
     font-weight: bold;
@@ -61,7 +70,7 @@ a {
 }
 #login .checkbox.show:before {
     content: '\e013';
-    color: #1fa67b;
+    color: #009999;
     font-size: 17px;
     margin: 1px 0 0 3px;
     position: absolute;
@@ -109,7 +118,7 @@ a {
 }
 .btn-custom {
     color: #fff;
-	background-color: #1fa67b;
+	background-color: #009999;
 }
 .btn-custom:hover,
 .btn-custom:focus {
@@ -122,9 +131,10 @@ a {
 #footer {
     position: fixed;
     left: 0;
-    bottom: 0;
+    bottom: 25px;
     width: 100%;
     color: #6d6d6d;
+    padding: 5px;
     font-size: 12px;
     text-align: center;
 }
@@ -133,4 +143,17 @@ a {
 }
 #footer a {
     color: inherit;
+}
+
+/*
+    --------------------------------------------------------
+    :: Alertd
+    --------------------------------------------------------
+*/
+.alert {
+  margin-bottom: 1px;
+  margin: 0px 15px;
+  height: 34px;
+  line-height:34px;
+  padding:0px 2px;
 }

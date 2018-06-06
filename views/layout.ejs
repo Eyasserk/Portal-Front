@@ -1,21 +1,33 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>C3Video</title>
+    <title>Silcam - Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="description" content="Silcam: Portal del ciudadano">
+   <meta name="author" content="Yasser Kantour">
+   <meta name="keywords" content="licencias mineras, concesión, portal del ciudadano, Miniterio de geología y minas">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/notifications.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/search.css">
+    <link rel="stylesheet" type="text/css" href="/stylesheets/notfound.css">
+    <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
+    <script src="/javascripts/main.js"></script>
 
   </head>
   <body>
     <!-- Barra Miniterio de geología y minas -->
+    <div style="margin: 0px 0px 0px 0px; padding: 0px 0px 0px 0px; width:100%; height:55px; background-color: #fed500;">
+      <img src="/images/interior.png">
+    </div>
     <!-- Navbar -->
-    <nav class="navbar navbar-custom navbar-fixed-top">
+    <nav class="navbar navbar-default">
       <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -25,8 +37,8 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">
-            <img alt="Brand" src="/img/silcam.png">
+          <a class="navbar-brand" href="/">
+            <img src="/images/favicon.png" style="margin-top: -10px;">
           </a>
         </div>
 
@@ -48,41 +60,142 @@
               </ul>
             </li>
           </ul>
-          <form class="navbar-form navbar-left" role="search">
-            <div class="form-group">
-              <input type="text" class="form-control" placeholder="Search">
+          <form class="navbar-form navbar-left" role="search" action="/search">
+            <div id="custom-search-input">
+                <div class="input-group col-md-12">
+                    <input type="text" class="form-control" name="q" placeholder="Buscar" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-lg" type="submit">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </span>
+                </div>
             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
           </form>
+          <% if(session.user){ %>
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Link</a></li>
+            <!-- Mensajes -->
+            <li><a href="/misMensajes"><span class="glyphicon glyphicon-envelope" <% if(session.messages.unread > 0){ %> style="color:#ff0000;" <% } %> ></span> Mensajes (<b><%= session.messages.length %></b>)</a></li>
+            <!-- Mensajes -->
+            <!-- Notificaciones -->
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" <% if(session.notifications.unread > 0){ %> style="color:#ff0000;" <% } %> >
+                <i class="glyphicon glyphicon-globe"></i>
+                Notificaciones (<b id="num-notif-unread"><%= session.notifications.unread %></b>)
+              </a>
+              <ul class="dropdown-menu notify-drop">
+                <div class="drop-content">
+                  <% var notificaciones = session.notifications.notifications; %>
+                  <% for(var i in notificaciones) { %>
+                  <li id="notif-<%= notificaciones[i].id  %>" style="background-color: <%= notificaciones[i].state === 1 ? '#fff':'#e8e8e8'; %>;">
+                    <div class="col-md-3 col-sm-3 col-xs-3"><div class="notify-img"><img src="/img/<%= notificaciones[i].type %>.png" alt=""></div></div>
+                    <div onclick="readNotification(<%= notificaciones[i].id %>);" class="col-md-9 col-sm-9 col-xs-9 pd-l0">
+                      <p>Expediente <a href="/expedientes/<%= notificaciones[i].idExpediente %>"><%= notificaciones[i].numeroExpediente %></a> 
+                        <span style="color: #00cc66; font-weight: bold;"><%= notificaciones[i].title %></span></p>
+                      <p><%= notificaciones[i].description %></p>
+                      <p class="time"><%= notificaciones[i].time %></p>
+                    </div>
+                  </li>
+                  <% } %>
+                </div>
+              </ul>
+            </li>
+            <!-- Fin Notificaciones -->
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <i class="glyphicon glyphicon-user"></i>
+                <%= session.user.type === 1 ? (session.user.name + ' ' + session.user.lastName1 + ' ' + session.user.lastName2) : (session.user.businessName) %> 
+                <span class="caret"></span>
+              </a>
               <ul class="dropdown-menu">
-                <li><a href="#">Action</a></li>
-                <li><a href="#">Another action</a></li>
-                <li><a href="#">Something else here</a></li>
+                <form id="logout-form" class="logout-form" action="/logout" accept-charset="UTF-8" method="post">
+                </form>
+                <li><a href="/misDatos"><i class="glyphicon glyphicon-align-justify"></i> Mis datos personales</a></li>
+                <li><a href="/misExpedientes"><i class="glyphicon glyphicon-folder-open"></i> Mis Expedientes</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="#">Separated link</a></li>
+                <li><a href="/help"><i class="glyphicon glyphicon-info-sign"></i> Ayuda</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#" id='salir' onclick="javascript:document.getElementById('logout-form').submit();" class=""><i class="glyphicon glyphicon-log-in"></i> Salir</a>
+                </li>
               </ul>
             </li>
           </ul>
+          <% }else{ %>
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <i class="glyphicon glyphicon-user"></i>
+                Área Personal 
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="/login"><i class="glyphicon glyphicon-log-in"></i> Entrar</a></li>
+              </ul>
+            </li>
+          </ul>
+          <% } %>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
-  	<%if (session.error) {%>
-    	<div class="alert alert-danger alert-dismissible" role="alert">
-  		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span class="text-black" aria-hidden="true">&times;</span></button>
-  		<strong>Error!</strong> <%= session.error %>
-    	</div>
-    	<%
-    	session.error = '';
-    }%>
+  	
+
+    <!-- Mensajes flash -->
+    <% if (messages.info) { %>
+            <div class="row" style="margin-top:3px;">
+              <div class="col-md-12">
+                <div class='alert alert-info'>
+                  <a class="close" data-dismiss="alert" href="#">×</a>
+                  <h5 class='alert-heading'><b>Información</b>
+                    <% for (var i in messages.info) { %>
+                      <span> <%= messages.info[i] %>. </span>
+                    <% } %>
+                  </h5>
+                </div>
+              </div>
+            </div>
+          <% } %>
+
+
+          <% if (messages.success) { %>
+            <div class="row" style="margin-top:3px;">
+              <div class="col-md-full">
+                <div class='alert alert-success'>
+                  <a class="close" data-dismiss="alert" href="#">×</a>
+                  <h5 class='alert-heading'><b>Tarea Terminada</b>
+                    <% for (var i in messages.success) { %>
+                      <span> <%= messages.success[i] %>. </span>
+                    <% } %>
+                  </h5>
+                </div>
+              </div>
+            </div>
+          <% } %>
+
+
+          <% if (messages.error) { %>
+            <div class="row" style="margin-top:3px;">
+              <div class="col-md-12">
+                <div class='alert alert-error'>
+                  <a class="close" data-dismiss="alert" href="#">×</a>
+                  <h5 class='alert-heading'><b>Error</b>
+                    <% for (var i in messages.error) { %>
+                      <span> <%= messages.error[i] %>. </span>
+                    <% } %>
+                  </h5>
+                </div>
+              </div>
+            </div>
+          <% } %>
+
+
+    <!-- Cueropo -->
     <%- body %>
+
 
     <!-- Footer -->
     <footer id="footer">
         <div class="container">
+            <hr>
             <div class="row">
                 <div class="col-xs-12">
                     <p>Silcam © - 2018</p>
