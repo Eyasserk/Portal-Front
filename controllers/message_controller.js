@@ -3,9 +3,9 @@ var config = require('../config');
 var moment = require('moment');
 moment.locale('es');
 /**
-exports.getNotifications = function(userId,userTypeId,token,callback){
+exports.getMessages = function(userId,userTypeId,token,callback){
 	request({
-		url: config.silcam_back_url+'/notificaciones/'+userTypeId+'/'+user_id,
+		url: config.silcam_back_url+'/mensajes/'+userTypeId+'/'+user_id,
 		method: 'GET',
 		headers: {
 			'Accept' : 'application/json',
@@ -22,34 +22,46 @@ exports.getNotifications = function(userId,userTypeId,token,callback){
 };
 */
 //Datos de Prueba / Mock
-exports.Messages = function(userId,userTypeId,token,callback){
+exports.getMessages = function(userId,userTypeId,token,callback){
 	var messages = {};
 	var unread = 1;
 
-	//Notificaciones: Todas
-	var n = [];
+	messages.unread = unread;
+	callback(null, messages);
+};
 
-	var message1 = {};
-	message1.state = 1;
-	message1.idExpediente = 210201;
-	message1.numeroExpediente = '201605-01-03-82392932923';
-	message1.title = 'Nuevo Estado';
-	message1.content = 'El estado de su expediente a cambiado a DENEGADO';
-	message1.time = moment("2018-06-06 09:54:03", "YYYY-MM-DD HH:mm:ss").fromNow();
+/**
+* Obtiene un hilo de conversación
+*/
+exports.show = function(req,res,next){
+	request({
+		url: config.silcam_back_url+'/hilos/'+req.param.threadId,
+		method: 'GET',
+		headers: {
+			'Accept' : 'application/json',
+			'Authorization': req.session.token.bearer
+			}
+		}, function(err, res) {
+		if(err){
+			req.flash('error', 'Ha habido un error al cargar su mensaje');
+			res.render('/');
+		}else{
+			var thread = JSON.parse(res.body);
+			res.render('message/show',{thread: thread});
+		}
+	});
+};
 
-	var message2 = {};
-	message1.state = 0;
-	message1.idExpediente = 210201;
-	message1.numeroExpediente = '201605-01-03-82392932923';
-	message1.title = 'Nuevo Estado';
-	message1.content = 'El estado de su expediente a cambiado a DENEGADO';
-	message1.time = moment("2018-06-06 09:54:03", "YYYY-MM-DD HH:mm:ss").fromNow();
+/**
+* Añade un mensaje en un hilo de conversacion
+*/
+exports.add = function(req,res,next){
 
-	n.push(notification1);
-	n.push(notification2);
+};
 
-	notifications.notifications = n;
-	notifications.unread = unread;
+/**
+* Crea un hilo de conversación 
+*/
+exports.create = function(req,res,next){
 
-	callback(null, notifications);
 };

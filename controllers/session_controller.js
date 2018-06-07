@@ -2,6 +2,7 @@
 var request = require('request');
 var user_controller = require('./user_controller');
 var notification_controller = require('./notification_controller');
+var message_controller = require('./message_controller');
 
 exports.loginRequired = function (req, res, next) {
     if (req.session && req.session.user) {
@@ -41,14 +42,21 @@ exports.create = function(req, res, next) {
             //Cargar mensajes y notificaciones
             notification_controller.getNotifications(user.id,user.type,authData.token,function(error,notificaciones){
               if(error){
-                req.flash('info','No se ha podido cargar sus notificaciones.');
-                req.session.messages = {unread:3,messages:[]};
+                req.flash('info','No se ha podido cargar sus mensajes y notificaciones.');
+                req.session.messages = {unread:0,messages:[]};
                 req.session.notifications = {unread:0,notifications:[]};
               }else{
-                req.session.messages = {unread:3,messages:[]};
                 req.session.notifications = notificaciones;
+                message_controller.getMessages(user.id, user.type,authData.token, function(error,mensajes){
+                  if(error){
+                    req.flash('info','No se ha podido cargar sus mensajes.');
+                    req.session.messages = {unread:0,messages:[]};
+                  }else{
+                    req.session.messages = mensajes;
+                  }
+                  res.redirect(redir);
+                });
               }
-              res.redirect(redir);
             });
           }
         });

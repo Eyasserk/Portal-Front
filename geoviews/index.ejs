@@ -1,0 +1,113 @@
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Silcam - Geo</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <meta name="description" content="Silcam: Portal del ciudadano">
+    <meta name="author" content="Yasser Kantour">
+    <meta name="keywords" content="licencias mineras, concesión, portal del ciudadano, Miniterio de geología y minas">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <script src="http://tablesorter.com/__jquery.tablesorter.js"></script>
+    <script src="http://tablesorter.com/addons/pager/jquery.tablesorter.pager.js"></script>
+    <script src="http://malsup.github.io/jquery.blockUI.js"></script>
+    <script src="http://malsup.github.com/chili-1.7.pack.js"></script>
+  </head>
+  <body>
+    <div id="throbber" style="display:none;">
+      <img src="/images/loading.gif"/>
+    </div>
+    <div id="map" style="width:100%; height:100%"></div>
+    <script>
+      function initMap() {
+        var npolygons = 0;
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 3,
+          center: {lat:40.4167,lng: -3.70325},
+          mapTypeId: 'terrain'
+        });
+
+          //Dibujar la parcela
+          var coords = [];
+          <% for(var i in geo.parcela.coordenadas){ %>
+            coords.push({lat: <%= geo.parcela.coordenadas[i].latitud %>, lng: <%= geo.parcela.coordenadas[i].longitud %>});
+          <% } %>
+
+          // Construir el poligono.
+          var poligono = new google.maps.Polygon({
+            paths: coords,
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35
+          });
+          poligono.setMap(map);
+
+          //construir la ventana de información
+          infoWindow = new google.maps.InfoWindow;
+          poligono.addListener('click', function(event){
+            // Al tener un polígono un único path, llamamos a getPath() para obtener el
+            // MVCArray de LatLng.
+            var vertices = this.getPath();
+            var area = google.maps.geometry.spherical.computeArea(poligono.getPath());
+            var area_string;
+            if(area >= 1000000){
+              area_string = (area/1000000).toFixed(2).toLocaleString() + ' km<sup>2</sup>';
+            }else{
+              area_string = Math.round(area).toLocaleString() + ' m<sup>2</sup>';
+            }
+
+            var contentString = 
+                'Expediente: <a href="/cases/<%= geo.id %>" target="_blank"><%= geo.numeroExpediente %></a><br>Provincia: <b><%= geo.parcela.provincia.nombre %></b><br>Mineral: <b><%= geo.mineral.nombre %></b><br>Area: <b>'+area_string+'</b><br>Coordenadas:<b>'+vertices.getLength()+'</b>:<br>'+getTablaCordenadasHtml(vertices);            
+
+            // Replace the info window's content and position.
+            infoWindow.setContent(contentString);
+            infoWindow.setPosition(event.latLng);
+
+            infoWindow.open(map);
+          });
+
+        if(!google.maps.Polygon.prototype.getBounds)
+        google.maps.Polygon.prototype.getBounds = function() {
+          var bounds = new google.maps.LatLngBounds();
+          var paths = this.getPaths();    
+          for (var i = 0; i < paths.getLength(); i++) {
+              var path = paths.getAt(i);
+              for (var j = 0; j < path.getLength(); j++) {
+                  bounds.extend(path.getAt(j));
+              }
+          }
+          return bounds;
+        }
+        $.blockUI({ message: $('#throbber'),
+                    css: {
+                      border:'none',
+                      backgroundColor:'transparent'
+                  }});
+
+        //Centrar el mapa y convertirlo en satélite
+        setTimeout(function(){
+          map.fitBounds(poligono.getBounds());
+          map.panTo(poligono.getBounds().getCenter());
+          map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+          $.unblockUI();
+        },3000);
+      }
+      function getTablaCordenadasHtml(vertices){
+        //Devuelve una tabla bootstrap pagina con 5 registros por página
+        //Cabecera
+        var html = '<ul>';
+        for(var i=0; i < vertices.getLength(); i++){
+          var xy = vertices.getAt(i);
+          html += '<li>' + xy.lat() + ',' + xy.lng() + '</li>';
+        }
+        html += '</ul>';
+        return html;
+      }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= apiKey %>&callback=initMap">
+    </script>
+  </body>
+</html>
