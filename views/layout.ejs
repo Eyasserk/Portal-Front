@@ -47,12 +47,12 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
             <li class="divider-vertical"></li>
-            <li><a href="/request">Solicitud</a></li>
+            <li><a href="/request"><i class="fas fa-clipboard"></i> Solicitud</a></li>
             <li class="divider-vertical"></li>
-            <li><a href="/licenses">Concesiones</a></li>
+            <li><a href="/licenses"><i class="fas fa-bookmark"></i> Concesiones</a></li>
             <li class="divider-vertical"></li>
             <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Expedientes <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-folder-open-o"></i> Expedientes <span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="/cases?caseType=1"><i class="fas fa-caret-right"></i> Prospección</a></li>
                 <li><a href="/cases?caseType=2"><i class="fas fa-caret-right"></i> Explotación</a></li>
@@ -180,7 +180,7 @@
           <% if (messages.error) { %>
             <div class="row" style="margin-top:3px;">
               <div class="col-md-12">
-                <div class='alert alert-error'>
+                <div class='alert alert-danger'>
                   <a class="close" data-dismiss="alert" href="#">×</a>
                   <h5 class='alert-heading'><b>Error</b>
                     <% for (var i in messages.error) { %>

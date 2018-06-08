@@ -129,7 +129,6 @@ a {
     :: Footer
 	-------------------------------------------------- */
 #footer {
-    position: fixed;
     left: 0;
     bottom: 25px;
     width: 100%;
