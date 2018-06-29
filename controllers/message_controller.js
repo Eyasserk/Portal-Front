@@ -9,7 +9,7 @@ exports.getMessages = function(userId,userTypeId,token,callback){
 		method: 'GET',
 		headers: {
 			'Accept' : 'application/json',
-			'Authorization': token.bearer
+			'Authorization': token
 			}
 		}, function(err, res) {
 		if(err){

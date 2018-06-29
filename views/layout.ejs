@@ -54,12 +54,12 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-folder-open-o"></i> Expedientes <span class="caret"></span></a>
               <ul class="dropdown-menu">
+                <li><a href="/cases"><i class="fas fa-caret-right"></i> Todos</a></li>
                 <li><a href="/cases?caseType=1"><i class="fas fa-caret-right"></i> Prospección</a></li>
                 <li><a href="/cases?caseType=2"><i class="fas fa-caret-right"></i> Explotación</a></li>
                 <li><a href="/cases?caseType=3"><i class="fas fa-caret-right"></i> Exploración</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/cases?caseType=0"><i class="fas fa-caret-right"></i> Otros</a></li>
-                <li><a href="/cases/1/area" target="_blank"><i class="fas fa-caret-right"></i> Otros</a></li>
               </ul>
             </li>
           </ul>
@@ -93,10 +93,10 @@
                   <% for(var i in notificaciones) { %>
                   <li id="notif-<%= notificaciones[i].id  %>" style="background-color: <%= notificaciones[i].state === 1 ? '#fff':'#e8e8e8'; %>;">
                     <div class="col-md-3 col-sm-3 col-xs-3"><div class="notify-img"><img src="/img/<%= notificaciones[i].type %>.png" alt=""></div></div>
-                    <div onclick="readNotification(<%= notificaciones[i].id %>);" class="col-md-9 col-sm-9 col-xs-9 pd-l0">
+                    <div onclick="readNotification('<%= notificaciones[i].id %>');" class="col-md-9 col-sm-9 col-xs-9 pd-l0">
                       <p>Expediente <a href="/expedientes/<%= notificaciones[i].idExpediente %>"><%= notificaciones[i].numeroExpediente %></a> 
-                        <span style="color: #00cc66; font-weight: bold;"><%= notificaciones[i].title %></span></p>
-                      <p><%= notificaciones[i].description %></p>
+                        <span style="color: #00cc66; font-weight: bold;"><%= notificaciones[i].titulo %></span></p>
+                      <p><%= notificaciones[i].descripcion %></p>
                       <p class="time"><%= notificaciones[i].time %></p>
                     </div>
                   </li>
@@ -115,7 +115,7 @@
               <ul class="dropdown-menu">
                 <form id="logout-form" class="logout-form" action="/logout" accept-charset="UTF-8" method="post">
                 </form>
-                <li><a href="/my/pernal"><i class="glyphicon glyphicon-align-justify"></i> Mis datos personales</a></li>
+                <li><a href="/my/personal"><i class="glyphicon glyphicon-align-justify"></i> Mis datos personales</a></li>
                 <li><a href="/my/cases"><i class="glyphicon glyphicon-folder-open"></i> Mis Expedientes</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/help"><i class="glyphicon glyphicon-info-sign"></i> Ayuda</a></li>
@@ -134,7 +134,9 @@
                 <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                <li><a href="/login"><i class="glyphicon glyphicon-log-in"></i> Entrar</a></li>
+                <li><a href="/login?id=1&type=0"><i class="glyphicon glyphicon-log-in"></i> Entrar con Nº Expediente</a></li>
+                <li><a href="/login?id=2&type=1"><i class="glyphicon glyphicon-log-in"></i> Entrar con DNI</a></li>
+                <li><a href="/login?id=2&type=2"><i class="glyphicon glyphicon-log-in"></i> Entrar con CIF</a></li>
               </ul>
             </li>
           </ul>

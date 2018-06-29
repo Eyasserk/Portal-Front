@@ -2,23 +2,28 @@ var request = require('request');
 var config = require('../config');
 
 
-/**
-exports.authenticate = function(numExpediente, key, callback){
+exports.authenticate = function(id, personType, val, key, callback){
 	request({
 		url: config.silcam_back_url+'/authenticate',
 		method: 'POST',
 		headers: {
+			'content-type' : 'application/json',
 			'Accept' : 'application/json'
 		},
-		form: {
-			'numero_expediente': numExpediente,
+		body: JSON.stringify({
+			'id': id,
+			'personType': personType,
+			'number': val,
 			'clave': key
-		}
-	}, function(err, res) {
-		if(err){
-			callback(err, null);
+		})
+	}, function(error, response, body) {
+		if(error){
+			callback('Ha ocurrido un problema. Por favor, inténtelo más tarde', null);
+		}else if(response.statusCode !== 200){
+			var body = JSON.parse(body);
+			callback(body.message, null);
 		}else{
-			var authData = JSON.parse(res.body);
+			var authData = JSON.parse(body);
 			callback(null, authData);
 		}
 	});
@@ -26,21 +31,29 @@ exports.authenticate = function(numExpediente, key, callback){
 
 
 exports.getUser = function(userId,userTypeId,token,callback){
-	console.log("Request getting user "+userId+" with type "+userTypeId+". Token: "+JSON.stringify(token));
+	var url = config.silcam_back_url;
+	if(userTypeId === 1){
+		url += '/personasFisicas/'+userId;
+	}else if(userTypeId === 2){
+		url += '/personasJuridicas/'+userId;
+	}else{
+		callback('User Type ID does not exist',null);
+		return;
+	}
 	request({
-		url: config.silcam_back_url+'/personas/'+userTypeId+'/'+user_id,
+		url: url,
 		method: 'GET',
 		headers: {
 			'Accept' : 'application/json',
-			'Authorization': token.bearer
+			'Authorization': token
 			}
-		}, function(err, res) {
+		}, function(err, res, body) {
 		if(err){
-
 			callback(err, null);
-
+		}else if(res.statusCode !== 200){
+			var body = JSON.parse(res.body);
+			callback(body.message, null);
 		}else{
-
 			var json = JSON.parse(res.body);
 			var user = {};
 
@@ -49,6 +62,8 @@ exports.getUser = function(userId,userTypeId,token,callback){
 			user.type = userTypeId;
 			user.idType = json.tipoIdentificacion;
 			user.idNumber = json.numeroIdentificacion;
+			user.email = json.email;
+			user.phone = json.telefono;
 			if(userTypeId === 1){
 				user.name = json.nombre;
 				user.lastName1 = json.apellido1;
@@ -60,48 +75,15 @@ exports.getUser = function(userId,userTypeId,token,callback){
 				user.country = json.paisResidencia;
 				user.nationality = json.nacionalidad;
 			}else{
+				user.constitutionDate = json.fechaConstitucion;
 				user.businessName = json.razonSocial;
 				user.representative = json.representante;
 				user.fiscalAddress = json.direccionFiscal;
-				user.fiscalCountry = json.paisFiscal;
+				user.fiscalProvince = json.provinciaFiscal;
 				user.nationality = json.paisNacionalidad;
 			}
 
 			callback(null, user);
 		}
 	});
-};
-*/
-
-// Datos de Prueba/ Mock
-exports.authenticate = function(numExpediente, key, callback){
-	var authData = {};
-	authData.token = {bearer:'abcedddegege'};
-	authData.userId = 1;
-	authData.userTypeId = 1;
-	callback(null,authData);
-}
-
-//Datos de Prueba/ Mock
-exports.getUser = function(userId,userTypeId,token,callback){
-
-	console.log("Request getting user "+userId+" with type "+userTypeId+". Token: "+JSON.stringify(token));
-
-	var user = {};
-
-	user.id = 1;
-	user.type = 1;
-	user.idType = 'NIE';
-	user.idNumber = 'X8751526A';
-	user.name = 'Yasser';
-	user.lastName1 = 'Kantour';
-	user.lastName2 = '';
-	
-	user.birthDate = '28/03/1990';
-	user.address = 'Avenida Castilla-La Mancha,82 San Sebastián de los Reeyes, 28702';
-	user.province = 'Madrid';
-	user.country = 'España';
-	user.nationality = 'Argelia';
-
-	callback(null, user);
 };

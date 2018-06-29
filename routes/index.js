@@ -24,6 +24,7 @@ router.post('/logout', sessionController.destroy);
 
 // Expedientes
 router.get('/cases', expedienteController.list);
+router.get('/my/cases', expedienteController.myCases);
 
 
 // Parcelas
@@ -44,6 +45,6 @@ router.post('/my/messages/:threadId', messageController.add);
 router.post('/my/messages', messageController.create);
 
 // Notificaciones
-//router.put('/my/notifications/:notificationId', notificationController.update);
+router.put('/my/notifications/:notificationId', notificationController.update);
 
 module.exports = router;

@@ -1,6 +1,25 @@
 var request = require('request');
 var config = require('../config');
 
+
+
+exports.myCases = function(req, res, next){
+	var page = req.query.page || 0;
+	var size = req.query.size || 10;
+	var query = [];
+	query.push('personId='+req.session.user.id);
+	query.push('tipoPersonaId='+req.session.user.type);
+	var q = formatQuery(query);
+	getExpedientes(q, page, size, function(error,expedientes){
+		if(error){
+			req.flash('error', 'Ha habido un error.');
+			res.redirect('/');
+		}else{
+			res.render('case/list', {expedientes: expedientes, query:q, page: parseInt(page), size: parseInt(size)});
+		}
+	});
+}
+
 exports.list = function(req,res,next){
 	var grupoId = req.query.group;
 	var mineralId = req.query.mineral;
@@ -20,18 +39,13 @@ exports.list = function(req,res,next){
 	var page = req.query.page;
 	var size = req.query.size;
 
-	if(page && ! '' === page){
-		query.push('page='+page);
-	}else{
-		query.push('page='+1);
-	}
-	if(size && ! '' === size){
-		query.push('size='+size);
-	}else{
-		query.push('size='+10);	
-	}
-
 	var query =[];
+	if(!page || '' === page){
+		page = 0;
+	}
+	if(!size || '' === size){
+		size = 10;
+	}
 	if(grupoId && ! '' === grupoId){
 		query.push('grupoId='+grupoId);
 	}
@@ -80,19 +94,19 @@ exports.list = function(req,res,next){
 
 	var q = formatQuery(query);
 
-	getExpedientes(q,function(error,expedientes){
+	getExpedientes(q, page, size, function(error,expedientes){
 		if(error){
 			req.flash('error', 'Ha habido un error con la búsqueda.');
 			res.redirect('/');
 		}else{
-			res.render('case/list', {expedientes: expedientes});
+			res.render('case/list', {expedientes: expedientes, query:q, page: parseInt(page), size: parseInt(size)});
 		}
 	});
 };
 
 var formatQuery = function(query){
 	if(query.length === 0){
-		return undefined;
+		return '';
 	}
 	if(query.length === 1){
 		return query[0];
@@ -102,19 +116,19 @@ var formatQuery = function(query){
 		q = q + query[i];
 		q = q + '&';
 	}
-	return q.slice(0, -1);
+	return q.slice(0,-1);
 };
 
-var getExpedientes = function(query,callback){
+var getExpedientes = function(query, page, size, callback){
 	request({
-		url: config.silcam_back_url+'/expedientes?'+query,
+		url: config.silcam_back_url+'/expedientes?page='+page+'&size='+size+'&'+query,
 		method: 'GET',
 		headers: {
 			'Accept' : 'application/json'
 		}
 	}, function(err, res) {
-		if(err){
-			callback(err, null);
+		if(err || res.statusCode != 200){
+			callback(err || 'Error', null);
 		}else{
 			var data = JSON.parse(res.body);
 			callback(null, data);

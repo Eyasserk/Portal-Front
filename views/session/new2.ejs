@@ -14,24 +14,28 @@
             $('#key').attr('type', 'password');
             
         }
+        <% if(id == 1){ %>
+        $(document).ready(function(){
+            $('#identificacion').mask('0000-00-0000000000000');
+            $('#identificacionRec').mask('0000-00-0000000000000');
+        });
+        <% } %>
         
     }
-    $(document).ready(function(){
-        $('#numExpediente').mask('0000-00-0000000000000');
-        $('#numExpRec').mask('0000-00-0000000000000');
-    });
 </script>
 <section id="login">
     <div class="container">
     	<div class="row">
     	    <div class="col-xs-12">
         	    <div class="form-wrap">
-                <h1>Entrar con Número de Expediente y Password</h1>
-                    <form role="form" action="/login?id=1" method="post" id="login-form" autocomplete="off">
+                <h1>Entrar</h1>
+                    <form role="form" action="/login" method="post" id="login-form" autocomplete="off">
                         <input type='hidden' name='redir' value='<%= redir %>'>
+                        <input type='hidden' name='id' value='<%= id %>'>
+                        <input type='hidden' name='idPersona' value='<%= idPersona %>'>
                         <div class="form-group">
-                            <label for="numExpediente" class="sr-only">Número Expediente</label>
-                            <input type="text" name="numExpediente" id="numExpediente" class="form-control" placeholder="Número de Expediente">
+                            <label for="identificacion" class="sr-only">Identificador</label>
+                            <input type="text" name="identificacion" id="identificacion" class="form-control" placeholder="Identificador">
                         </div>
                         <div class="input-group">
                             <label for="key" class="sr-only">Password</label>
@@ -61,8 +65,8 @@
 				<h4 class="modal-title">Recuperar contraseña</h4>
 			</div>
 			<div class="modal-body">
-				<p>Número de expediente</p>
-				<input type="text" name="numExpRec" id="numExpRec" class="form-control" autocomplete="off" placeholder="xxxxxx-xx-xx-xxxxxx">
+				<p>Identificador</p>
+				<input type="text" name="identificacionRec" id="identificacionRec" class="form-control" autocomplete="off" placeholder="Identificador">
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>

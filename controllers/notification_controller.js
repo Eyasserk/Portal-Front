@@ -2,58 +2,57 @@ var request = require('request');
 var config = require('../config');
 var moment = require('moment');
 moment.locale('es');
-/**
-exports.getNotifications = function(userId,userTypeId,token,callback){
+
+exports.getNotifications = function(userId,token,callback){
 	request({
-		url: config.silcam_back_url+'/notificaciones/'+userTypeId+'/'+user_id,
+		url: config.silcam_back_url+'/notificaciones/personas/'+userId,
 		method: 'GET',
 		headers: {
 			'Accept' : 'application/json',
-			'Authorization': token.bearer
+			'Authorization': token
 			}
-		}, function(err, res) {
+		}, function(err, res, body) {
 		if(err){
 			callback(err, null);
+		}else if(res.statusCode !== 200){
+			var data = JSON.parse(res.body);
+			callback(data.message, null);
 		}else{
 			var data = JSON.parse(res.body);
-			callback(null, data);
+			//Calcular el numero de notificaciones no leidas
+			var unread = 0;
+			for(var i in data){
+				if(data[i].state === 0){
+					unread++;
+				}
+			}
+			var notificaciones = {};
+			notificaciones.unread = unread;
+			notificaciones.notifications = data;
+			callback(null, notificaciones);
 		}
 	});
 };
-*/
-//Datos de Prueba / Mock
-exports.getNotifications = function(userId,userTypeId,token,callback){
-	var notifications = {};
-	var unread = 1;
 
-	//Notificaciones: Todas
-	var n = [];
-
-	var notification1 = {};
-	notification1.id = 1;
-	notification1.state = 0;
-	notification1.type = 'state_changed';
-	notification1.idExpediente = 210201;
-	notification1.numeroExpediente = '201605-01-03-82392932923';
-	notification1.title = 'Nuevo Estado';
-	notification1.description = 'El estado de su expediente a cambiado a DENEGADO';
-	notification1.time = moment("2018-06-06 09:54:03", "YYYY-MM-DD HH:mm:ss").fromNow();
-
-	var notification2 = {};
-	notification2.id = 2;
-	notification2.state = 1;
-	notification2.type = 'fase_changed';
-	notification2.idExpediente = 210201;
-	notification2.numeroExpediente = '201605-01-03-82392932923';
-	notification2.title = 'Nueva Fase';
-	notification2.description = 'Su expediente ha entrado en la fase de PAGO';
-	notification2.time = moment("2018-06-05 09:52:03", "YYYY-MM-DD HH:mm:ss").fromNow();
-
-	n.push(notification1);
-	n.push(notification2);
-
-	notifications.notifications = n;
-	notifications.unread = unread;
-
-	callback(null, notifications);
-};
+exports.update = function(req, res, next){
+	console.log("Request update notification "+req.params.notificationId);
+	request({
+		url: config.silcam_back_url+'/notificaciones/'+req.params.notificationId,
+		method: 'PUT',
+		headers: {
+			'Accept' : 'application/json',
+			'content-type': 'application/json',
+			'Authorization': req.session.token
+			},
+		body: '{}'
+		}, function(err, response, body) {
+		if(err){
+			callback(err, null);
+		}else if(response.statusCode !== 204){
+			var data = JSON.parse(response.body);
+			callback(data.message, null);
+		}else{
+			res.status(200).send();
+		}
+	});
+}
